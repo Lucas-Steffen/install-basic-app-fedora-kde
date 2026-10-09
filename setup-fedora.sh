@@ -8,7 +8,7 @@
 # script de novo: as etapas já feitas são puladas e ele retoma do ponto
 # da falha, sem repetir trabalho nem deixar passos pela metade.
 
-set -euo pipefail
+set -Eeuo pipefail
 
 if [ "$EUID" -eq 0 ]; then
   echo "Não rode como root. Rode como usuário normal que o script usa sudo quando precisar."
@@ -150,4 +150,11 @@ step_flatpak_apps() {
 }
 run_step "flatpak-apps" step_flatpak_apps
 
-log "Pronto! Faça logout/login (ou reinicie) pra aplicar o grupo docker."
+log "Pronto! Leia os avisos abaixo antes de reiniciar."
+echo "  - Grupo docker: quem está nele tem root de fato na máquina (ex.: docker run -v /:/host ...)."
+echo "    É um trade-off aceito aqui; se quiser evitar, use Docker rootless ou 'sudo docker' em vez disso."
+echo "  - NVIDIA: o módulo akmod ainda pode estar compilando. Antes de reiniciar, rode:"
+echo "      modinfo -F version nvidia"
+echo "    Se não retornar uma versão, espere e tente de novo (reiniciar antes disso pode dar tela preta)."
+echo "    Com Secure Boot ativo, ainda falta inscrever a chave: sudo mokutil --import /var/lib/dkms/mok.pub"
+echo "  - Depois: faça logout/login (ou reinicie) pra aplicar o grupo docker."
